@@ -18,8 +18,7 @@ driver = webdriver.Chrome('./chromedriver', options=options)
 df_titles = pd.DataFrame()
 for i in range(0, 6):
     titles = []
-
-    for j in range(1, pages[i] + 1):
+    for j in range(1,pages[i]+1):
         url = 'https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=10{}#&date=%2000:00:00&page={}'.format(i, j)
         driver.get(url)
         time.sleep(0.2)
@@ -40,6 +39,8 @@ for i in range(0, 6):
                     except:
                         try:
                             x_path = '//*[@id="section_body"]/ul[{}]/li[{}]/dl/dt/a'.format(k, l)
+                            title = re.compile('[^가-힣 ]').sub('', title)
+                            titles.append(title)
                         except:
                             print('no such element')
                 except StaleElementReferenceException as e:
@@ -58,7 +59,6 @@ for i in range(0, 6):
     df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
     df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
     titles = []
-
 driver.close()
 
     # // *[ @ id = "section_body"] / ul[1] / li[1] / dl / dt[2] / a
