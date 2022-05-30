@@ -35,11 +35,9 @@ import re
 import time
 
 
-# category = ['Politics', 'Economic', 'Social', 'Culture', 'World', 'IT']
-# pages = [110, 110, 110, 78, 110, 66]
+category = ['판타지', '퓨전', '현대판타지', '무협', '스포츠', '대체역사', '로맨스', "SF", 'BL', '전쟁·밀리터리']
 
 url = 'https://novel.munpia.com/269750'
-# url = 'https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=100'
 
 options = webdriver.ChromeOptions()
 options.add_argument('lang=ko_KR')
@@ -49,23 +47,74 @@ options.add_argument('disable-gpu')
 driver = webdriver.Chrome('./chromedriver', options=options)
 df_titles = pd.DataFrame()
 
+driver.get(url)
+time.sleep(1)
+driver.find_element_by_xpath('/html/body/div[2]/div[1]/section[1]/div/section/header/div/a').click()
+time.sleep(1)
+driver.find_element_by_xpath(('//*[@id="NAV-TABLE"]/ul/li[2]/ul/li[3]/a/span')).click()
+time.sleep(1)
+
 for i in range(1, 106):
-    pages = []
-    # driver.get()
-    driver.get(url)
-    time.sleep(2)
-    driver.find_element_by_xpath('/html/body/div[2]/div[1]/section[1]/div/section/header/div/a').click()
-    time.sleep(2)
-    driver.find_element_by_xpath(('//*[@id="NAV-TABLE"]/ul/li[2]/ul/li[3]/a/span')).click()
-    time.sleep(1)
+    titles = []
+    intros = []
+    genres = []
+
 #######
-    # if i == 1:
-    driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[1]/a').click()
-    time.sleep(1)
-    for j in range(2, 52):
-        driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
-        #.format(j)).click()
+    if i in range(1, 6):
+        driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[{}]/a'.format(i)).click()
+        time.sleep(0.3)
+        for j in range(2, 51):
+            driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
+            time.sleep(0.3)
+            x_path_title = '//*[@id="board"]/div[1]/div[3]/h2/a'
+            x_path_intro = '//*[@id="STORY-BOX"]/p[1]'
+            x_path_genre = '//*[@id="board"]/div[1]/div[3]/p[1]/strong'
+            try:
+                title = driver.find_element_by_xpath(x_path_title).text
+                title = re.compile('[^가-힣 ]').sub('', title)
+                titles.append(title)
+                intro = driver.find_element_by_xpath(x_path_intro).text
+                intro = re.compile('[^가-힣 ]').sub('', intro)
+                intros.append(intro)
+                genre = driver.find_element_by_xpath(x_path_genre).text
+                genre = re.compile('[^가-힣 ]').sub('', genre)
+                genres.append(genre)
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+            except StaleElementReferenceException as e:
+                print(e)
+            except:
+                print('error')
+    else:
+        driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[6]/a').click()
         time.sleep(1)
+        for j in range(2, 51):
+            driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
+            time.sleep(0.3)
+            x_path_title = '//*[@id="board"]/div[1]/div[3]/h2/a'
+            x_path_intro = '//*[@id="STORY-BOX"]/p[1]'
+            x_path_genre = '//*[@id="board"]/div[1]/div[3]/p[1]/strong'
+            try:
+                title = driver.find_element_by_xpath(x_path_title).text
+                title = re.compile('[^가-힣 ]').sub('', title)
+                titles.append(title)
+                intro = driver.find_element_by_xpath(x_path_intro).text
+                intro = re.compile('[^가-힣 ]').sub('', intro)
+                intros.append(intro)
+                genre = driver.find_element_by_xpath(x_path_genre).text
+                genre = re.compile('[^가-힣 ]').sub('', genre)
+                genres.append(genre)
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+            except StaleElementReferenceException as e:
+                print(e)
+            except:
+                print('error')
+
+
+    ##### for 문 작업해야됨 #####
     # elif i == 2:
     #     driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[2]/a').click()
     # elif i == 3:
@@ -110,20 +159,21 @@ for i in range(1, 106):
 #                 print(category[i], j, 'page', k * l)
 #             except:
 #                 print('error')
-#     if j % 30 == 0:
-#         df_section_titles = pd.DataFrame(titles, columns=['titles'])
-#         df_section_titles['category'] = category[i]
-#         df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-#         df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
-#         titles = []
-#     df_section_titles = pd.DataFrame(titles, columns=['titles'])
-#     df_section_titles['category'] = category[i]
-#     df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-#     df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
-#     titles = []
-# driver.close()
+    if i % 10 == 0:
+        # df_novels = pd.DataFrame([titles, intros, genres], columns=['titles', 'intros', 'genres'])
+        df_novels = pd.DataFrame({'titles':titles, 'intros':intros, 'genres':genres})
+        df_novels.to_csv('./Moonpia_crawling_data_{}.csv'.format(i), index=False)
+df_novels = pd.DataFrame(titles, intros, genres, columns=['titles', 'intros', 'genres'])
+    # df_intros = pd.DataFrame(intros, columns=['intro'])
+    # df_genres = pd.DataFrame(genres, columns=['genre'])
+    # df = pd.concat([df_titles, df_intros, df_genres], ignore_index=True)
+df_novels.to_csv('./Moonpia_crawling_data.csv', index=False)
+    # df_intros.to_csv('./Moonpia_intro_crawling_data.csv', index=False)
+    # df_genres.to_csv('./Moonpia_genre_crawling_data.csv', index=False)
+driver.close()
 
 
 
 
 
+#//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[6]/a
