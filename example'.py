@@ -12,8 +12,21 @@
 # 10p //*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[5]/a
 
 
-##### 제목########
+##### 제목(리모콘) ########
 # 유황숙네 천재 아들 //*[@id="SECTION-LIST"]/ul/li[1]/a[2]
+# 프랑스왕가의      //*[@id="SECTION-LIST"]/ul/li[2]/a[2]
+# 천재 쉐프        //*[@id="SECTION-LIST"]/ul/li[3]/a[1]
+#//*[@id="SECTION-LIST"]/ul/li[3]/a[2]
+# 마도군단의 아포칼 //*[@id="SECTION-LIST"]/ul/li[4]/a[2]
+# 아포칼립스의 좀비 //*[@id="SECTION-LIST"]/ul/li[5]/a[2]
+# 천재타자        //*[@id="SECTION-LIST"]/ul/li[6]/a[2]
+
+
+##### 제목 ############
+# 유황숙네 천재 아들 //*[@id="board"]/div[1]/div[3]/h2/a
+#  -- 소개 -- //*[@id="STORY-BOX"]/p[1]
+# 프랑스 왕가 //*[@id="board"]/div[1]/div[3]/h2/a
+#  -- 소개 -- //*[@id="STORY-BOX"]/p[1]
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -50,7 +63,7 @@ for i in range(1, 106):
     driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[1]/a').click()
     time.sleep(1)
     for j in range(2, 52):
-        driver.find_element_by_xpath('/html/body/div[2]/div[1]/section[1]/div/section/section[5]/ul/li[1]/a[3]').click()
+        driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
         #.format(j)).click()
         time.sleep(1)
     # elif i == 2:
