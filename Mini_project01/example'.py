@@ -53,8 +53,8 @@ driver.find_element_by_xpath('/html/body/div[2]/div[1]/section[1]/div/section/he
 time.sleep(1)
 driver.find_element_by_xpath(('//*[@id="NAV-TABLE"]/ul/li[2]/ul/li[3]/a/span')).click()
 time.sleep(1)
-
-for i in range(1, 106):
+df_novels = pd.DataFrame()
+for i in range(5, 51):
     titles = []
     intros = []
     genres = []
@@ -63,7 +63,7 @@ for i in range(1, 106):
     if i in range(1, 6):
         driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[{}]/a'.format(i)).click()
         time.sleep(0.3)
-        for j in range(2, 51):
+        for j in range(1, 51):
             driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
             time.sleep(0.3)
             x_path_title = '//*[@id="board"]/div[1]/div[3]/h2/a'
@@ -73,23 +73,45 @@ for i in range(1, 106):
                 title = driver.find_element_by_xpath(x_path_title).text
                 title = re.compile('[^가-힣 ]').sub('', title)
                 titles.append(title)
-                intro = driver.find_element_by_xpath(x_path_intro).text
-                intro = re.compile('[^가-힣 ]').sub('', intro)
-                intros.append(intro)
-                genre = driver.find_element_by_xpath(x_path_genre).text
-                genre = re.compile('[^가-힣 ]').sub('', genre)
-                genres.append(genre)
+
             except NoSuchElementException as e:
                 time.sleep(1)
                 print(NoSuchElementException)
+
             except StaleElementReferenceException as e:
                 print(e)
             except:
-                print('error')
+                pass
+
+
+            try:
+                intro = driver.find_element_by_xpath(x_path_intro).text
+                intro = re.compile('[^가-힣 ]').sub('', intro)
+                intros.append(intro)
+
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+                intros.append(title)
+            except:
+                pass
+
+            try:
+
+                genre = driver.find_element_by_xpath(x_path_genre).text
+                genre = re.compile('[^가-힣 ]').sub('', genre)
+                genres.append(genre)
+
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+                genres.append(title)
+            except:
+                pass
     else:
         driver.find_element_by_xpath('//*[@id="NOVELOUS-CONTENTS"]/section[4]/ul/li[6]/a').click()
         time.sleep(1)
-        for j in range(2, 51):
+        for j in range(1, 51):
             driver.find_element_by_xpath('//*[@id="SECTION-LIST"]/ul/li[{}]/a[2]'.format(j)).click()
             time.sleep(0.3)
             x_path_title = '//*[@id="board"]/div[1]/div[3]/h2/a'
@@ -99,20 +121,40 @@ for i in range(1, 106):
                 title = driver.find_element_by_xpath(x_path_title).text
                 title = re.compile('[^가-힣 ]').sub('', title)
                 titles.append(title)
-                intro = driver.find_element_by_xpath(x_path_intro).text
-                intro = re.compile('[^가-힣 ]').sub('', intro)
-                intros.append(intro)
-                genre = driver.find_element_by_xpath(x_path_genre).text
-                genre = re.compile('[^가-힣 ]').sub('', genre)
-                genres.append(genre)
+
             except NoSuchElementException as e:
                 time.sleep(1)
                 print(NoSuchElementException)
+
             except StaleElementReferenceException as e:
                 print(e)
-            except:
-                print('error')
 
+            except:
+                pass
+
+            try:
+
+                intro = driver.find_element_by_xpath(x_path_intro).text
+                intro = re.compile('[^가-힣 ]').sub('', intro)
+                intros.append(intro)
+
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+                intros.append(title)
+            except:
+                pass
+            try:
+                genre = driver.find_element_by_xpath(x_path_genre).text
+                genre = re.compile('[^가-힣 ]').sub('', genre)
+                genres.append(genre)
+
+            except NoSuchElementException as e:
+                time.sleep(1)
+                print(NoSuchElementException)
+                genres.append(title)
+            except:
+                pass
 
     ##### for 문 작업해야됨 #####
     # elif i == 2:
@@ -159,17 +201,20 @@ for i in range(1, 106):
 #                 print(category[i], j, 'page', k * l)
 #             except:
 #                 print('error')
-    if i % 10 == 0:
+    if i % 2 == 0:
         # df_novels = pd.DataFrame([titles, intros, genres], columns=['titles', 'intros', 'genres'])
-        df_novels = pd.DataFrame({'titles':titles, 'intros':intros, 'genres':genres})
-        df_novels.to_csv('./Moonpia_crawling_data_{}.csv'.format(i), index=False)
-df_novels = pd.DataFrame(titles, intros, genres, columns=['titles', 'intros', 'genres'])
-    # df_intros = pd.DataFrame(intros, columns=['intro'])
-    # df_genres = pd.DataFrame(genres, columns=['genre'])
-    # df = pd.concat([df_titles, df_intros, df_genres], ignore_index=True)
-df_novels.to_csv('./Moonpia_crawling_data.csv', index=False)
-    # df_intros.to_csv('./Moonpia_intro_crawling_data.csv', index=False)
-    # df_genres.to_csv('./Moonpia_genre_crawling_data.csv', index=False)
+        df_section_novels = pd.DataFrame({'titles':titles, 'intros':intros, 'genres':genres})
+        df_novels = pd.concat([df_novels, df_section_novels], ignore_index=True)
+        df_novels.to_csv('./Munpia_/Moonpia_crawling_data_finished_{}.csv'.format(i), index=False)
+    time.sleep(1)
+    df_section_novels = pd.DataFrame({'titles':titles, 'intros':intros, 'genres':genres})
+        # df_intros = pd.DataFrame(intros, columns=['intro'])
+        # df_genres = pd.DataFrame(genres, columns=['genre'])
+        # df = pd.concat([df_titles, df_intros, df_genres], ignore_index=True)
+    df_novels = pd.concat([df_novels, df_section_novels], ignore_index=True)
+    df_novels.to_csv('./Munpia_/Moonpia_crawling_data_finished_5.csv', index=False)
+        # df_intros.to_csv('./Moonpia_intro_crawling_data.csv', index=False)
+        # df_genres.to_csv('./Moonpia_genre_crawling_data.csv', index=False)
 driver.close()
 
 
